@@ -1,0 +1,222 @@
+{
+  "updated_at": "2026-09-12T20:00:02.215934",
+  "date": "2026-09-12",
+  "nifty": {
+    "date_str": "2026-09-12",
+    "instrument": "NIFTY 50",
+    "active_reversal_window": "18-Sep & 19-Sep",
+    "annual_gann_deg": 173.47,
+    "current_nakshatra": "UTTARA PHALGUNI (SUN)",
+    "current_pada": "PADA 4",
+    "volatility_status": "NORMAL Z ANNUAL DEGREE",
+    "sun_moon_angle": 12.6,
+    "moon_longitude": 157.73,
+    "morning_slots": [
+      {
+        "formatted": "09:15 AM",
+        "time_str": "09:15 AM",
+        "hour": 9,
+        "minute": 15,
+        "rating": "4.0 STAR \u2605\u2605\u2605\u2605\u2606 (MASTER)",
+        "score": 4.5,
+        "is_master": true
+      },
+      {
+        "formatted": "09:49 AM",
+        "time_str": "09:49 AM",
+        "hour": 9,
+        "minute": 49,
+        "rating": "4.0 STAR \u2605\u2605\u2605\u2605\u2606 (MASTER)",
+        "score": 4.5,
+        "is_master": true
+      },
+      {
+        "formatted": "10:42 AM",
+        "time_str": "10:42 AM",
+        "hour": 10,
+        "minute": 42,
+        "rating": "3.0 STAR \u2605\u2605\u2605\u2606\u2606 (MAJOR)",
+        "score": 3.5,
+        "is_master": false
+      },
+      {
+        "formatted": "11:01 AM",
+        "time_str": "11:01 AM",
+        "hour": 11,
+        "minute": 1,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
+        "is_master": false
+      }
+    ],
+    "afternoon_slots": [
+      {
+        "formatted": "12:16 PM",
+        "time_str": "12:16 PM",
+        "hour": 12,
+        "minute": 16,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
+      },
+      {
+        "formatted": "12:54 PM",
+        "time_str": "12:54 PM",
+        "hour": 12,
+        "minute": 54,
+        "rating": "2.5 STAR \u2605\u2605\u00bd\u2606\u2606",
+        "score": 3.0,
+        "is_master": false
+      },
+      {
+        "formatted": "01:26 PM",
+        "time_str": "01:26 PM",
+        "hour": 13,
+        "minute": 26,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
+        "is_master": false
+      },
+      {
+        "formatted": "01:51 PM",
+        "time_str": "01:51 PM",
+        "hour": 13,
+        "minute": 51,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
+      }
+    ],
+    "nakshatra": "PURVA PHALGUNI (VENUS)",
+    "pada": "PADA 3",
+    "day_grade": "\ud83d\udc8e DIAMOND MASTER (95/100) 4"
+  },
+  "gold": {
+    "date_str": "2026-09-12",
+    "instrument": "GOLD XAUUSD",
+    "active_reversal_window": "18-Sep & 19-Sep",
+    "annual_gann_deg": 173.47,
+    "current_nakshatra": "UTTARA PHALGUNI (SUN)",
+    "current_pada": "PADA 3",
+    "volatility_status": "NORMAL Z ANNUAL DEGREE",
+    "sun_moon_angle": 10.7,
+    "moon_longitude": 155.77,
+    "asian_slots": [
+      {
+        "formatted": "06:00 AM",
+        "time_str": "06:00 AM",
+        "hour": 6,
+        "minute": 0,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
+      },
+      {
+        "formatted": "07:15 AM",
+        "time_str": "07:15 AM",
+        "hour": 7,
+        "minute": 15,
+        "rating": "2.5 STAR \u2605\u2605\u00bd\u2606\u2606",
+        "score": 3.0,
+        "is_master": false
+      },
+      {
+        "formatted": "07:40 AM",
+        "time_str": "07:40 AM",
+        "hour": 7,
+        "minute": 40,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
+        "is_master": false
+      },
+      {
+        "formatted": "09:10 AM",
+        "time_str": "09:10 AM",
+        "hour": 9,
+        "minute": 10,
+        "rating": "4.0 STAR \u2605\u2605\u2605\u2605\u2606 (MASTER)",
+        "score": 4.5,
+        "is_master": true
+      }
+    ],
+    "london_slots": [
+      {
+        "formatted": "01:30 PM",
+        "time_str": "01:30 PM",
+        "hour": 13,
+        "minute": 30,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
+      },
+      {
+        "formatted": "01:55 PM",
+        "time_str": "01:55 PM",
+        "hour": 13,
+        "minute": 55,
+        "rating": "2.5 STAR \u2605\u2605\u00bd\u2606\u2606",
+        "score": 3.0,
+        "is_master": false
+      },
+      {
+        "formatted": "02:50 PM",
+        "time_str": "02:50 PM",
+        "hour": 14,
+        "minute": 50,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
+        "is_master": false
+      },
+      {
+        "formatted": "03:25 PM",
+        "time_str": "03:25 PM",
+        "hour": 15,
+        "minute": 25,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
+      }
+    ],
+    "ny_slots": [
+      {
+        "formatted": "06:35 PM",
+        "time_str": "06:35 PM",
+        "hour": 18,
+        "minute": 35,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
+      },
+      {
+        "formatted": "07:20 PM",
+        "time_str": "07:20 PM",
+        "hour": 19,
+        "minute": 20,
+        "rating": "2.5 STAR \u2605\u2605\u00bd\u2606\u2606",
+        "score": 3.0,
+        "is_master": false
+      },
+      {
+        "formatted": "08:10 PM",
+        "time_str": "08:10 PM",
+        "hour": 20,
+        "minute": 10,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
+        "is_master": false
+      },
+      {
+        "formatted": "09:45 PM",
+        "time_str": "09:45 PM",
+        "hour": 21,
+        "minute": 45,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
+      }
+    ],
+    "nakshatra": "PURVA PHALGUNI (VENUS)",
+    "pada": "PADA 3",
+    "day_grade": "\ud83d\udc8e MASTER GRADE (95/100) KEY PIVOT"
+  }
+}
