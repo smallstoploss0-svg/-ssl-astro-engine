@@ -101,7 +101,7 @@ CLIENT_HTML = """<!DOCTYPE html>
 
     .timetable-banner { background: #1E293B; color: white; padding: 10px 14px; border-radius: 10px 10px 0 0; font-size: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
     .timetable-container { background: white; border: 1.5px solid #1E293B; border-top: none; border-radius: 0 0 14px 14px; overflow: hidden; margin-bottom: 20px; }
-    .session-header { background: #F1F5F9; color: #475569; font-size: 11px; font-weight: 900; padding: 8px 12px; border-bottom: 1px solid #E2E8F0; border-top: 1px solid #CBD5E1; }
+    .session-header { background: #EFF6FF; color: #1E40AF; font-size: 13px; font-weight: 900; padding: 10px 14px; border-bottom: 1.5px solid #BFDBFE; border-top: 1px solid #DBEAFE; letter-spacing: 0.5px; text-transform: uppercase; }
 
     .slot-row { display: flex; align-items: center; padding: 11px 12px; border-bottom: 1px solid #F1F5F9; background: #FFFFFF; }
     .slot-row.master { background: #FEF2F2; border-left: 4px solid #DC2626; }
