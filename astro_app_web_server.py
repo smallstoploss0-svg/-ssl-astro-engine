@@ -13,6 +13,14 @@ os.makedirs(DB_DIR, exist_ok=True)
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 DB_PATH = os.path.join(DB_DIR, "astro_master.db")
+root_db_path = os.path.join(BASE_DIR, "astro_master.db")
+if os.path.exists(root_db_path):
+    import shutil
+    try:
+        shutil.copy(root_db_path, DB_PATH)
+        print("[DB Sync] astro_master.db loaded successfully from root!")
+    except Exception as e:
+        print(f"[DB Sync Error] {e}")
 
 # Import database manager
 sys.path.append(BASE_DIR)
@@ -128,7 +136,7 @@ CLIENT_HTML = """<!DOCTYPE html>
 
     <!-- 1. LOGIN SCREEN -->
     <div class="login-container" id="login-screen">
-      <img src="/icon-192.png" class="login-logo" alt="SSL Logo">
+      <img src="/official_logo.jpg" class="login-logo" alt="SSL Logo" onerror="this.src='/icon-192.png'">
       <div class="login-title">SSL ASTRO ENGINE</div>
       <div class="login-sub">Gold XAUUSD & Nifty 50 Astro Reversal Timetable</div>
       
@@ -152,7 +160,7 @@ CLIENT_HTML = """<!DOCTYPE html>
     <div id="client-dashboard" style="display: none; flex-direction: column; flex: 1;">
       <div class="app-header">
         <div class="app-logo-group">
-          <img src="/icon-192.png" class="app-logo-img" alt="Logo">
+          <img src="/official_logo.jpg" class="app-logo-img" alt="Logo" onerror="this.src='/icon-192.png'">
           <div class="app-title">SSL ASTRO ENGINE</div>
         </div>
         <div class="header-actions">
@@ -980,11 +988,12 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
             else:
                 self.send_error(404)
-        elif path in ['/icon-192.png', '/icon-512.png', '/screenshot-1.png', '/screenshot-2.png']:
+        elif path in ['/icon-192.png', '/icon-512.png', '/official_logo.jpg', '/screenshot-1.png', '/screenshot-2.png']:
             img_path = os.path.join(BASE_DIR, path.lstrip('/'))
             if os.path.exists(img_path):
                 self.send_response(200)
-                self.send_header('Content-type', 'image/png')
+                ctype = 'image/jpeg' if img_path.endswith('.jpg') or img_path.endswith('.jpeg') else 'image/png'
+                self.send_header('Content-type', ctype)
                 self.send_header('Cache-Control', 'public, max-age=86400')
                 self.end_headers()
                 with open(img_path, 'rb') as f:
