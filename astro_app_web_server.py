@@ -303,8 +303,11 @@ CLIENT_HTML = """<!DOCTYPE html>
       document.getElementById('adm-end').value = nextMonth.toISOString().split('T')[0];
 
       const savedPhone = localStorage.getItem('ssl_user_phone');
+      const savedPin = localStorage.getItem('ssl_user_pin');
       if (savedPhone) {
-        verifyPhoneAccess(savedPhone, true);
+        document.getElementById('login-phone').value = savedPhone;
+        if (savedPin) document.getElementById('login-pin').value = savedPin;
+        verifyPhoneAccess(savedPhone, true, false);
       }
       loadPayloadData();
       setInterval(loadPayloadData, 30000);
@@ -334,6 +337,7 @@ CLIENT_HTML = """<!DOCTYPE html>
         showToast('❌ Invalid Password! Password is last 4 digits of your mobile', 'red');
         return;
       }
+      localStorage.setItem('ssl_user_pin', pin);
       await verifyPhoneAccess(phone, false, true);
     }
 
@@ -360,12 +364,16 @@ CLIENT_HTML = """<!DOCTYPE html>
         } else {
           localStorage.removeItem('ssl_user_phone');
           localStorage.removeItem('ssl_session_token');
+          localStorage.removeItem('ssl_user_pin');
           document.getElementById('login-screen').style.display = 'flex';
           document.getElementById('client-dashboard').style.display = 'none';
           showToast('❌ ' + (data.reason || 'Access Denied'), 'red');
         }
       } catch(e) {
-        showToast('⚠️ Server connection error!', 'red');
+        showToast('🔄 Reconnecting to Astro Engine Cloud...', 'amber');
+        if (isAuto) {
+          setTimeout(() => { verifyPhoneAccess(phone, true, false); }, 3000);
+        }
       }
     }
 
@@ -383,6 +391,9 @@ CLIENT_HTML = """<!DOCTYPE html>
       }
       localStorage.removeItem('ssl_user_phone');
       localStorage.removeItem('ssl_session_token');
+      localStorage.removeItem('ssl_user_pin');
+      document.getElementById('login-phone').value = '';
+      document.getElementById('login-pin').value = '';
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('client-dashboard').style.display = 'none';
       showToast('🔒 Logged out successfully');
@@ -1018,6 +1029,13 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.end_headers()
             self.wfile.write(ADMIN_DESKTOP_HTML.encode('utf-8'))
+        elif path == '/api/ping':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            res = {"status": "alive", "timestamp": datetime.now().isoformat()}
+            self.wfile.write(json.dumps(res).encode('utf-8'))
         elif path == '/api/daily_payload':
             payload_path = os.path.join(BASE_DIR, "daily_astro_payload.json")
             if os.path.exists(payload_path):
@@ -1316,7 +1334,23 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         else:
             self.send_error(404)
 
+def start_keep_alive_thread():
+    import threading, time, urllib.request
+    def ping_loop():
+        target_url = "https://ssl-astro-engine.onrender.com/api/ping"
+        while True:
+            time.sleep(300)
+            try:
+                req = urllib.request.Request(target_url, headers={'User-Agent': 'SSL-Astro-KeepAlive/1.0'})
+                with urllib.request.urlopen(req, timeout=10) as res:
+                    res.read()
+            except Exception:
+                pass
+    t = threading.Thread(target=ping_loop, daemon=True)
+    t.start()
+
 if __name__ == '__main__':
+    start_keep_alive_thread()
     with http.server.ThreadingHTTPServer(("0.0.0.0", PORT), CustomHandler) as httpd:
         print(f"SSL Astro Engine Central DB Server running at http://localhost:{PORT}")
         httpd.serve_forever()
