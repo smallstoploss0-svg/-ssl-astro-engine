@@ -73,6 +73,10 @@ CLIENT_HTML = """<!DOCTYPE html>
     .btn-login { width: 100%; background: #8B008B; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 15px; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 4px 14px rgba(139,0,139,0.4); margin-top: 6px; }
     .btn-login:active { transform: scale(0.98); }
 
+    .brand-tagline-banner { background: linear-gradient(90deg, #4C1D95 0%, #7C3AED 50%, #4C1D95 100%); color: #FFD700; font-size: 13px; font-weight: 900; text-align: center; padding: 10px 12px; letter-spacing: 0.8px; border-bottom: 2.5px solid #FFD700; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+    @media print { body { display: none !important; } }
+    body { user-select: none; -webkit-user-select: none; }
+
     .nav-tabs { display: flex; background: #7B007B; }
     .tab-btn { flex: 1; padding: 14px 6px; border: none; background: transparent; color: rgba(255,255,255,0.7); font-weight: 800; font-size: 13px; cursor: pointer; border-bottom: 3.5px solid transparent; transition: all 0.2s; text-align: center; }
     .tab-btn.active { color: #FFD700; border-bottom-color: #FFD700; background: rgba(255,255,255,0.15); }
@@ -167,6 +171,10 @@ CLIENT_HTML = """<!DOCTYPE html>
           <button class="icon-btn" onclick="toggleVibration()" id="btn-vib">🔊 VIB ON</button>
           <button class="icon-btn" onclick="handleLogout()" style="background: #DC2626;">🔒 LOGOUT</button>
         </div>
+      </div>
+
+      <div class="brand-tagline-banner">
+        🏆 INDIA'S NO.1 FINANCIAL ASTROLOGY SYSTEM
       </div>
 
       <div class="nav-tabs">
@@ -331,15 +339,19 @@ CLIENT_HTML = """<!DOCTYPE html>
 
     async function verifyPhoneAccess(phone, isAuto) {
       try {
+        const sessToken = localStorage.getItem('ssl_session_token');
         const res = await fetch('/api/check_access', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phone })
+          body: JSON.stringify({ phone: phone, session_token: sessToken })
         });
         const data = await res.json();
 
         if (data.has_access) {
           localStorage.setItem('ssl_user_phone', phone);
+          if (data.session_token) {
+            localStorage.setItem('ssl_session_token', data.session_token);
+          }
           document.getElementById('login-screen').style.display = 'none';
           document.getElementById('client-dashboard').style.display = 'flex';
           if (!isAuto) {
@@ -347,6 +359,7 @@ CLIENT_HTML = """<!DOCTYPE html>
           }
         } else {
           localStorage.removeItem('ssl_user_phone');
+          localStorage.removeItem('ssl_session_token');
           document.getElementById('login-screen').style.display = 'flex';
           document.getElementById('client-dashboard').style.display = 'none';
           showToast('❌ ' + (data.reason || 'Access Denied'), 'red');
@@ -356,12 +369,33 @@ CLIENT_HTML = """<!DOCTYPE html>
       }
     }
 
-    function handleLogout() {
+    async function handleLogout() {
+      const phone = localStorage.getItem('ssl_user_phone');
+      const sessToken = localStorage.getItem('ssl_session_token');
+      if (phone) {
+        try {
+          await fetch('/api/clients/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phone, session_token: sessToken })
+          });
+        } catch(e) {}
+      }
       localStorage.removeItem('ssl_user_phone');
+      localStorage.removeItem('ssl_session_token');
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('client-dashboard').style.display = 'none';
       showToast('🔒 Logged out successfully');
     }
+
+    // Anti-screenshot / Anti-capture protection
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'PrintScreen') {
+        if (navigator.clipboard) navigator.clipboard.writeText('');
+        showToast('⚠️ Screen Capture Restricted!', 'amber');
+      }
+    });
 
     function toggleVibration() {
       isVibeOn = !isVibeOn;
@@ -568,6 +602,7 @@ CLIENT_HTML = """<!DOCTYPE html>
               <span style="font-weight:800; font-size:10px; padding:3px 8px; border-radius:6px; background:${c.status==='ACTIVE'?'#DCFCE7':'#FEE2E2'}; color:${c.status==='ACTIVE'?'#166534':'#991B1B'};">
                 ${c.status}
               </span>
+              <button style="background:#0284C7; color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:800; font-size:10px; cursor:pointer;" title="Reset Device Lock" onclick="unlockAdminClient(${c.id}, '${c.name.replace(/'/g, "\\'")}')">🔓 Unlock Device</button>
               <button style="background:#DC2626; color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="deleteAdminClient(${c.id}, '${c.name.replace(/'/g, "\\'")}')">🗑️</button>
             </div>
           `;
@@ -575,6 +610,22 @@ CLIENT_HTML = """<!DOCTYPE html>
         });
       } catch(e) {
         console.log('Error loading subscribers list:', e);
+      }
+    }
+
+    async function unlockAdminClient(id, name) {
+      if (!confirm(`Reset single device lock for subscriber "${name}"? This will allow logging in on a new device.`)) return;
+      try {
+        const res = await fetch('/api/clients/unlock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id })
+        });
+        const data = await res.json();
+        alert(data.message);
+        loadAdminSubscribersList();
+      } catch(e) {
+        alert('⚠️ Error resetting subscriber device lock!');
       }
     }
 
@@ -1243,8 +1294,20 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(res).encode('utf-8'))
+        elif path == '/api/clients/unlock':
+            res = db.unlock_client_device(body.get('id'))
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(res).encode('utf-8'))
+        elif path == '/api/clients/logout':
+            res = db.logout_client(body.get('phone', ''), body.get('session_token'))
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(res).encode('utf-8'))
         elif path == '/api/check_access':
-            res = db.check_client_access(body.get('phone', ''))
+            res = db.check_client_access(body.get('phone', ''), body.get('session_token'))
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()

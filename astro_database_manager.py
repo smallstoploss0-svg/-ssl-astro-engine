@@ -29,9 +29,19 @@ class AstroDatabaseManager:
                     start_date TEXT NOT NULL,
                     end_date TEXT NOT NULL,
                     status TEXT DEFAULT 'ACTIVE',
+                    active_session_token TEXT,
+                    last_active TIMESTAMP,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
+            try:
+                cursor.execute("ALTER TABLE clients ADD COLUMN active_session_token TEXT")
+            except Exception:
+                pass
+            try:
+                cursor.execute("ALTER TABLE clients ADD COLUMN last_active TIMESTAMP")
+            except Exception:
+                pass
             
             # 2. Daily Reversal Records Table
             cursor.execute('''
@@ -182,8 +192,27 @@ class AstroDatabaseManager:
             conn.commit()
             return {"success": True, "message": "Subscriber removed and deleted from Database successfully!"}
 
-    def check_client_access(self, phone):
+    def unlock_client_device(self, client_id):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE clients SET active_session_token = NULL WHERE id = ?", (client_id,))
+            conn.commit()
+            return {"success": True, "message": "Subscriber device lock reset successfully! User can now login on a new device."}
+
+    def logout_client(self, phone, session_token=None):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if session_token:
+                cursor.execute("UPDATE clients SET active_session_token = NULL WHERE phone = ? AND active_session_token = ?", (phone.strip(), session_token))
+            else:
+                cursor.execute("UPDATE clients SET active_session_token = NULL WHERE phone = ?", (phone.strip(),))
+            conn.commit()
+            return {"success": True, "message": "Logged out successfully."}
+
+    def check_client_access(self, phone, session_token=None):
+        import uuid
         today = datetime.now().date()
+        now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         with self.get_connection() as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
@@ -199,7 +228,27 @@ class AstroDatabaseManager:
             if c['status'] == 'BLOCKED' or days_remaining <= 0:
                 return {"has_access": False, "client": c, "reason": f"Subscription Expired on {c['end_date']}. Contact Admin to renew."}
             
-            return {"has_access": True, "client": c, "days_remaining": days_remaining}
+            active_token = c.get('active_session_token')
+            
+            # Single Device Session Enforcement
+            if active_token and active_token.strip():
+                if session_token and session_token.strip() == active_token.strip():
+                    cursor.execute("UPDATE clients SET last_active = ? WHERE id = ?", (now_str, c['id']))
+                    conn.commit()
+                    return {"has_access": True, "client": c, "days_remaining": days_remaining, "session_token": active_token}
+                else:
+                    return {
+                        "has_access": False, 
+                        "error": "device_locked", 
+                        "reason": "❌ Account is active on another device! Please LOGOUT from active device first."
+                    }
+            
+            # Fresh Login / No Active Session Token
+            new_token = f"sess_{uuid.uuid4().hex[:16]}"
+            cursor.execute("UPDATE clients SET active_session_token = ?, last_active = ? WHERE id = ?", (new_token, now_str, c['id']))
+            conn.commit()
+            c['active_session_token'] = new_token
+            return {"has_access": True, "client": c, "days_remaining": days_remaining, "session_token": new_token}
 
     def export_clients_csv(self, output_path=None):
         if not output_path:
