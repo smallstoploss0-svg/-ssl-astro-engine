@@ -620,7 +620,6 @@ CLIENT_HTML = """<!DOCTYPE html>
               <span style="font-weight:800; font-size:10px; padding:3px 8px; border-radius:6px; background:${c.status==='ACTIVE'?'#DCFCE7':'#FEE2E2'}; color:${c.status==='ACTIVE'?'#166534':'#991B1B'};">
                 ${c.status}
               </span>
-              <button style="background:#0284C7; color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:800; font-size:10px; cursor:pointer;" title="Reset Device Lock" onclick="unlockAdminClient(${c.id}, '${c.name.replace(/'/g, "\\'")}')">🔓 Unlock Device</button>
               <button style="background:#DC2626; color:white; border:none; padding:4px 8px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="deleteAdminClient(${c.id}, '${c.name.replace(/'/g, "\\'")}')">🗑️</button>
             </div>
           `;
@@ -1098,22 +1097,6 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                         "sizes": "512x512",
                         "type": "image/png",
                         "purpose": "any maskable"
-                    }
-                ],
-                "screenshots": [
-                    {
-                        "src": "/screenshot-1.png",
-                        "sizes": "1100x720",
-                        "type": "image/png",
-                        "form_factor": "narrow",
-                        "label": "SSL Astro Engine Mobile Dashboard"
-                    },
-                    {
-                        "src": "/screenshot-2.png",
-                        "sizes": "1100x920",
-                        "type": "image/png",
-                        "form_factor": "wide",
-                        "label": "SSL Astro Engine Timetable Desktop View"
                     }
                 ],
                 "related_applications": [],
