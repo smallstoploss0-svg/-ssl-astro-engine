@@ -1103,14 +1103,14 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 "screenshots": [
                     {
                         "src": "/screenshot-1.png",
-                        "sizes": "1080x1920",
+                        "sizes": "1100x720",
                         "type": "image/png",
                         "form_factor": "narrow",
                         "label": "SSL Astro Engine Mobile Dashboard"
                     },
                     {
                         "src": "/screenshot-2.png",
-                        "sizes": "1920x1080",
+                        "sizes": "1100x920",
                         "type": "image/png",
                         "form_factor": "wide",
                         "label": "SSL Astro Engine Timetable Desktop View"
