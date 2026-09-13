@@ -334,16 +334,16 @@ CLIENT_HTML = """<!DOCTYPE html>
         showToast('❌ Invalid Password! Password is last 4 digits of your mobile', 'red');
         return;
       }
-      await verifyPhoneAccess(phone, false);
+      await verifyPhoneAccess(phone, false, true);
     }
 
-    async function verifyPhoneAccess(phone, isAuto) {
+    async function verifyPhoneAccess(phone, isAuto, isLogin=false) {
       try {
         const sessToken = localStorage.getItem('ssl_session_token');
         const res = await fetch('/api/check_access', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phone, session_token: sessToken })
+          body: JSON.stringify({ phone: phone, session_token: sessToken, is_login: isLogin })
         });
         const data = await res.json();
 
@@ -1325,7 +1325,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(res).encode('utf-8'))
         elif path == '/api/check_access':
-            res = db.check_client_access(body.get('phone', ''), body.get('session_token'))
+            res = db.check_client_access(body.get('phone', ''), body.get('session_token'), body.get('is_login', False))
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()

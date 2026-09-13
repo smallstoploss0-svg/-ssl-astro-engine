@@ -209,7 +209,7 @@ class AstroDatabaseManager:
             conn.commit()
             return {"success": True, "message": "Logged out successfully."}
 
-    def check_client_access(self, phone, session_token=None):
+    def check_client_access(self, phone, session_token=None, is_login=False):
         import uuid
         today = datetime.now().date()
         now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -230,7 +230,15 @@ class AstroDatabaseManager:
             
             active_token = c.get('active_session_token')
             
-            # Single Device Session Enforcement
+            # Explicit Login Action (Entering Mobile + Password) -> Claims active session for current device
+            if is_login:
+                new_token = f"sess_{uuid.uuid4().hex[:16]}"
+                cursor.execute("UPDATE clients SET active_session_token = ?, last_active = ? WHERE id = ?", (new_token, now_str, c['id']))
+                conn.commit()
+                c['active_session_token'] = new_token
+                return {"has_access": True, "client": c, "days_remaining": days_remaining, "session_token": new_token}
+
+            # Background / Refresh Checks
             if active_token and active_token.strip():
                 if session_token and session_token.strip() == active_token.strip():
                     cursor.execute("UPDATE clients SET last_active = ? WHERE id = ?", (now_str, c['id']))
@@ -240,10 +248,10 @@ class AstroDatabaseManager:
                     return {
                         "has_access": False, 
                         "error": "device_locked", 
-                        "reason": "❌ Account is active on another device! Please LOGOUT from active device first."
+                        "reason": "❌ Logged in on another device! Please login again with password to claim this device."
                     }
             
-            # Fresh Login / No Active Session Token
+            # Fallback if no active token exists
             new_token = f"sess_{uuid.uuid4().hex[:16]}"
             cursor.execute("UPDATE clients SET active_session_token = ?, last_active = ? WHERE id = ?", (new_token, now_str, c['id']))
             conn.commit()
