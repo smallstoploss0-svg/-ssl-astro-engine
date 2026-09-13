@@ -244,6 +244,11 @@ class AstroDatabaseManager:
                     cursor.execute("UPDATE clients SET last_active = ? WHERE id = ?", (now_str, c['id']))
                     conn.commit()
                     return {"has_access": True, "client": c, "days_remaining": days_remaining, "session_token": active_token}
+                elif not session_token or not session_token.strip():
+                    # Refresh fallback: Bind to existing active_token so user stays logged in on refresh
+                    cursor.execute("UPDATE clients SET last_active = ? WHERE id = ?", (now_str, c['id']))
+                    conn.commit()
+                    return {"has_access": True, "client": c, "days_remaining": days_remaining, "session_token": active_token}
                 else:
                     return {
                         "has_access": False, 
