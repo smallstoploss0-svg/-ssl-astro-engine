@@ -388,11 +388,29 @@ CLIENT_HTML = """<!DOCTYPE html>
       showToast('🔒 Logged out successfully');
     }
 
-    // Anti-screenshot / Anti-capture protection
+    // Enhanced Anti-screenshot / Anti-recording protection layer
     document.addEventListener('contextmenu', e => e.preventDefault());
+    
+    // Auto blur & blackout whenever app window loses focus (recording overlay, notification shade pull down, screenshot key)
+    window.addEventListener('blur', () => {
+      document.body.style.filter = 'blur(40px) brightness(0)';
+    });
+    window.addEventListener('focus', () => {
+      document.body.style.filter = 'none';
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        document.body.style.filter = 'blur(40px) brightness(0)';
+      } else {
+        document.body.style.filter = 'none';
+      }
+    });
+
     document.addEventListener('keyup', (e) => {
-      if (e.key === 'PrintScreen') {
+      if (e.key === 'PrintScreen' || e.keyCode === 44) {
         if (navigator.clipboard) navigator.clipboard.writeText('');
+        document.body.style.filter = 'blur(40px) brightness(0)';
+        setTimeout(() => { document.body.style.filter = 'none'; }, 2000);
         showToast('⚠️ Screen Capture Restricted!', 'amber');
       }
     });
