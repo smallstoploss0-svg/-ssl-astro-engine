@@ -1162,16 +1162,31 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 hr12 = 12 if hr12 == 0 else hr12
                 time_val = f"{hr12:02d}:{mn:02d} {period}"
                 
-                is_master = (hr in [9, 10, 13, 14, 18, 21])
-                formatted = f"{time_val}"
+                # Check exact Master & Major slots
+                is_master = (hr12 == 10 and mn == 9) or (hr12 == 1 and mn == 54) or (hr12 == 3 and mn == 14) or (hr12 == 3 and mn == 15) or (hr12 == 9 and mn == 10 and period == 'AM') or (hr12 == 8 and mn == 45 and period == 'PM')
+                is_major = (hr12 == 1 and mn == 32) or (hr12 == 7 and mn == 40) or (hr12 == 7 and mn == 20)
+                is_med = (hr12 == 11 and mn == 10) or (hr12 == 8 and mn == 30) or (hr12 == 4 and mn == 55) or (hr12 == 8 and mn == 10)
+                
+                if is_master:
+                    rating_str = "4.0 STAR ★★★★☆ (MASTER)"
+                    score_val = 4.5
+                elif is_major:
+                    rating_str = "2.5 STAR ★★½☆☆"
+                    score_val = 3.0
+                elif is_med:
+                    rating_str = "2.0 STAR ★★☆☆☆"
+                    score_val = 2.5
+                else:
+                    rating_str = "1.5 STAR ★½☆☆☆"
+                    score_val = 2.0
                 
                 slots.append({
-                    "formatted": formatted,
+                    "formatted": time_val,
                     "time_str": time_val,
                     "hour": hr,
                     "minute": mn,
-                    "rating": "5/5 ★★★★★" if is_master else "4/5 ★★★★☆",
-                    "score": 4.5 if is_master else 3.5,
+                    "rating": rating_str,
+                    "score": score_val,
                     "is_master": is_master
                 })
             return slots
