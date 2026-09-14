@@ -1424,91 +1424,54 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         with open(payload_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2)
 
+    def parse_multipart_files(self, content_type, body_bytes):
+        import re
+        files = {}
+        if 'boundary=' not in content_type:
+            return files
+        boundary_str = content_type.split('boundary=')[1].strip().strip('"')
+        boundary = boundary_str.encode('utf-8')
+        parts = body_bytes.split(b'--' + boundary)
+        for part in parts:
+            if not part or part == b'--\r\n' or part == b'--' or part == b'\r\n':
+                continue
+            if b'\r\n\r\n' in part:
+                h_part, f_data = part.split(b'\r\n\r\n', 1)
+                if f_data.endswith(b'\r\n'):
+                    f_data = f_data[:-2]
+                h_text = h_part.decode('utf-8', errors='ignore')
+                m = re.search(r'name="([^"]+)"', h_text)
+                if m:
+                    files[m.group(1)] = f_data
+        return files
+
     def do_POST(self):
-        length = int(self.headers.get('Content-Length', 0))
-        contentType = self.headers.get('Content-Type', '')
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            contentType = self.headers.get('Content-Type', '')
 
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
+            parsed = urllib.parse.urlparse(self.path)
+            path = parsed.path
 
-        if 'multipart/form-data' in contentType or 'application/x-www-form-urlencoded' in contentType:
-            # Handle File Uploads (Excel / Images) and Form Submissions
-            import cgi
-            env = {
-                'REQUEST_METHOD': 'POST',
-                'CONTENT_TYPE': self.headers.get('Content-Type', ''),
-                'CONTENT_LENGTH': self.headers.get('Content-Length', '0')
-            }
-            form = cgi.FieldStorage(
-                fp=self.rfile,
-                headers=self.headers,
-                environ=env
-            )
-            
-            if path == '/api/upload_reports':
-                nifty_uploaded = False
-                gold_uploaded = False
+            body_bytes = self.rfile.read(length) if length > 0 else b''
 
-                if 'nifty_img' in form and hasattr(form['nifty_img'], 'file') and form['nifty_img'].file:
-                    content = form['nifty_img'].file.read()
-                    if len(content) > 0:
-                        with open(os.path.join(REPORTS_DIR, 'nifty_raw.png'), 'wb') as f:
-                            f.write(content)
-                        with open(os.path.join(BASE_DIR, 'screenshot-1.png'), 'wb') as f:
-                            f.write(content)
-                        nifty_uploaded = True
+            if path == '/api/upload_astro_excel':
+                file_bytes = None
+                if 'multipart/form-data' in contentType:
+                    files = self.parse_multipart_files(contentType, body_bytes)
+                    file_bytes = files.get('astro_excel')
+                elif length > 0:
+                    file_bytes = body_bytes
 
-                if 'gold_img' in form and hasattr(form['gold_img'], 'file') and form['gold_img'].file:
-                    content = form['gold_img'].file.read()
-                    if len(content) > 0:
-                        with open(os.path.join(REPORTS_DIR, 'gold_raw.png'), 'wb') as f:
-                            f.write(content)
-                        with open(os.path.join(BASE_DIR, 'screenshot-2.png'), 'wb') as f:
-                            f.write(content)
-                        gold_uploaded = True
-                
-                n_slots_text = form.getvalue('nifty_slots', '') if 'nifty_slots' in form else ''
-                g_slots_text = form.getvalue('gold_slots', '') if 'gold_slots' in form else ''
-
-                # Update payload slots directly using exact report times or OCR
-                self.update_custom_payload_slots(n_slots_text, g_slots_text, nifty_uploaded, gold_uploaded)
-
-                res = {"success": True, "message": "Daily Report Screenshots & Exact Reversal Times Broadcasted Successfully!"}
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps(res).encode('utf-8'))
-                return
-            elif path == '/api/import_excel':
-                if 'excel_file' in form and form['excel_file'].file:
-                    tmp_path = os.path.join(REPORTS_DIR, 'imported_clients.xlsx')
+                if file_bytes and len(file_bytes) > 0:
+                    tmp_path = os.path.join(REPORTS_DIR, 'uploaded_astro_report.xlsx')
                     with open(tmp_path, 'wb') as f:
-                        f.write(form['excel_file'].file.read())
+                        f.write(file_bytes)
                     
-                    res = db.import_clients_from_file(tmp_path)
-                    self.send_response(200)
-                    self.send_header('Content-type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(json.dumps(res).encode('utf-8'))
-                    return
-            elif path == '/api/upload_astro_excel':
-                try:
-                    excel_item = form['astro_excel'] if 'astro_excel' in form else None
-                    if excel_item and hasattr(excel_item, 'file') and excel_item.file:
-                        content = excel_item.file.read()
-                        if len(content) > 0:
-                            tmp_path = os.path.join(REPORTS_DIR, 'uploaded_astro_report.xlsx')
-                            with open(tmp_path, 'wb') as f:
-                                f.write(content)
-                            
-                            success, msg = self.parse_astro_excel_report(tmp_path)
-                            res = {"success": success, "message": msg}
-                        else:
-                            res = {"success": False, "message": "Uploaded Excel file is empty (0 bytes)."}
-                    else:
-                        res = {"success": False, "message": "No Excel file uploaded in form field 'astro_excel'."}
-                except Exception as ex:
-                    res = {"success": False, "message": f"Excel parsing error: {str(ex)}"}
+                    success, msg = self.parse_astro_excel_report(tmp_path)
+                    res = {"success": success, "message": msg}
+                else:
+                    res = {"success": False, "message": "No Excel file data received in upload request."}
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -1517,56 +1480,102 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps(res).encode('utf-8'))
                 return
 
-        body_bytes = self.rfile.read(length) if length > 0 else b'{}'
-        try:
-            body = json.loads(body_bytes.decode('utf-8'))
-        except Exception:
-            body = {}
+            elif path == '/api/upload_reports':
+                nifty_uploaded = False
+                gold_uploaded = False
+                n_slots_text = ""
+                g_slots_text = ""
 
-        if path == '/api/clients/add':
-            res = db.add_client(body.get('name'), body.get('phone'), body.get('startDate'), body.get('endDate'))
-            self.send_response(200)
+                if 'multipart/form-data' in contentType:
+                    files = self.parse_multipart_files(contentType, body_bytes)
+                    if 'nifty_img' in files and len(files['nifty_img']) > 0:
+                        with open(os.path.join(REPORTS_DIR, 'nifty_raw.png'), 'wb') as f:
+                            f.write(files['nifty_img'])
+                        with open(os.path.join(BASE_DIR, 'screenshot-1.png'), 'wb') as f:
+                            f.write(files['nifty_img'])
+                        nifty_uploaded = True
+
+                    if 'gold_img' in files and len(files['gold_img']) > 0:
+                        with open(os.path.join(REPORTS_DIR, 'gold_raw.png'), 'wb') as f:
+                            f.write(files['gold_img'])
+                        with open(os.path.join(BASE_DIR, 'screenshot-2.png'), 'wb') as f:
+                            f.write(files['gold_img'])
+                        gold_uploaded = True
+
+                    if 'nifty_slots' in files:
+                        n_slots_text = files['nifty_slots'].decode('utf-8', errors='ignore')
+                    if 'gold_slots' in files:
+                        g_slots_text = files['gold_slots'].decode('utf-8', errors='ignore')
+
+                self.update_custom_payload_slots(n_slots_text, g_slots_text, nifty_uploaded, gold_uploaded)
+                res = {"success": True, "message": "Daily Report Screenshots & Exact Reversal Times Broadcasted Successfully!"}
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(res).encode('utf-8'))
+                return
+
+            elif path == '/api/import_excel':
+                if 'multipart/form-data' in contentType:
+                    files = self.parse_multipart_files(contentType, body_bytes)
+                    excel_data = files.get('excel_file')
+                    if excel_data:
+                        tmp_path = os.path.join(REPORTS_DIR, 'imported_clients.xlsx')
+                        with open(tmp_path, 'wb') as f:
+                            f.write(excel_data)
+                        res = db.import_clients_from_file(tmp_path)
+                    else:
+                        res = {"success": False, "message": "No excel_file found in upload."}
+                else:
+                    res = {"success": False, "message": "Invalid content type for import_excel."}
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(res).encode('utf-8'))
+                return
+
+            # Standard JSON API Endpoints
+            body = {}
+            if body_bytes:
+                try:
+                    body = json.loads(body_bytes.decode('utf-8'))
+                except Exception:
+                    body = {}
+
+            if path == '/api/clients/add':
+                res = db.add_client(body.get('name'), body.get('phone'), body.get('startDate'), body.get('endDate'))
+            elif path == '/api/clients/extend':
+                res = db.extend_client(body.get('id'), body.get('days', 30))
+            elif path == '/api/clients/block':
+                res = db.block_client(body.get('id'))
+            elif path == '/api/clients/delete':
+                res = db.delete_client(body.get('id'))
+            elif path == '/api/clients/unlock':
+                res = db.unlock_client_device(body.get('id'))
+            elif path == '/api/clients/logout':
+                res = db.logout_client(body.get('phone', ''), body.get('session_token'))
+            elif path == '/api/check_access':
+                res = db.check_client_access(body.get('phone', ''), body.get('session_token'), body.get('is_login', False))
+            else:
+                res = {"error": "Not Found", "status": 404}
+
+            self.send_response(200 if "error" not in res else 404)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(res).encode('utf-8'))
-        elif path == '/api/clients/extend':
-            res = db.extend_client(body.get('id'), body.get('days', 30))
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode('utf-8'))
-        elif path == '/api/clients/block':
-            res = db.block_client(body.get('id'))
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode('utf-8'))
-        elif path == '/api/clients/delete':
-            res = db.delete_client(body.get('id'))
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode('utf-8'))
-        elif path == '/api/clients/unlock':
-            res = db.unlock_client_device(body.get('id'))
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode('utf-8'))
-        elif path == '/api/clients/logout':
-            res = db.logout_client(body.get('phone', ''), body.get('session_token'))
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode('utf-8'))
-        elif path == '/api/check_access':
-            res = db.check_client_access(body.get('phone', ''), body.get('session_token'), body.get('is_login', False))
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode('utf-8'))
-        else:
-            self.send_error(404)
+
+        except Exception as top_err:
+            print(f"[do_POST Global Exception] {top_err}")
+            res = {"success": False, "message": f"Server processing error: {str(top_err)}"}
+            try:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(res).encode('utf-8'))
+            except Exception:
+                pass
 
 def start_keep_alive_thread():
     import threading, time, urllib.request
