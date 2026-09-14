@@ -193,11 +193,9 @@ CLIENT_HTML = """<!DOCTYPE html>
             <span class="grade-highlight" id="rep-grade">💎 DIAMOND MASTER (95/100)</span>
           </div>
           <div class="report-metrics-bar">
-            <div><span class="m-label">NAKSHATRA:</span> <span class="m-val" id="rep-nak">MAGHA (KETU)</span></div>
-            <div><span class="m-label">PADA:</span> <span class="m-val" id="rep-pada">PADA 3</span></div>
             <div><span class="m-label">VOLATILITY:</span> <span class="m-val" id="rep-vol">NORMAL</span></div>
-            <div><span class="m-label">ANNUAL DEG:</span> <span class="m-val" id="rep-deg">172.71°</span></div>
-            <div style="grid-column: span 2;"><span class="m-label" style="color:#FFD700;">🗓️ TREND CHANGE DATES:</span> <span class="m-val" id="rep-trend-dates" style="color:#FFD700; font-weight:900;">18-Sep & 19-Sep</span></div>
+            <div><span class="m-label">ANNUAL DEG:</span> <span class="m-val" id="rep-deg">175.68°</span></div>
+            <div style="grid-column: span 2;"><span class="m-label" style="color:#FFD700;">🗓️ TREND CHANGE DATES:</span> <span class="m-val" id="rep-trend-dates" style="color:#FFD700; font-weight:900;">18-Sep &amp; 19-Sep</span></div>
           </div>
           <button class="btn-view-report" onclick="openReportChartModal()">
             🖼️ VIEW DAILY GRADED CHART REPORT
