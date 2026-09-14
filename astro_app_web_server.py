@@ -467,10 +467,14 @@ CLIENT_HTML = """<!DOCTYPE html>
       document.getElementById('rep-sub').innerText = 'DAILY REVERSAL PREDICTION REPORT (' + (currentAsset === 'NIFTY' ? '1-MIN LOOP' : '5-MIN LOOP') + ')';
       document.getElementById('rep-date').innerText = 'DATE: ' + (payloadData.date || 'TODAY');
       document.getElementById('rep-grade').innerText = data.day_grade || '💎 MASTER GRADE';
-      document.getElementById('rep-nak').innerText = data.nakshatra || 'PURVA PHALGUNI';
-      document.getElementById('rep-pada').innerText = data.pada || 'PADA 3';
-      document.getElementById('rep-vol').innerText = data.volatility_status || 'NORMAL';
-      document.getElementById('rep-deg').innerText = data.annual_degree || '172.71°';
+      const nakEl = document.getElementById('rep-nak');
+      if (nakEl) nakEl.innerText = data.nakshatra || 'PURVA PHALGUNI';
+      const padaEl = document.getElementById('rep-pada');
+      if (padaEl) padaEl.innerText = data.pada || 'PADA 3';
+      const volEl = document.getElementById('rep-vol');
+      if (volEl) volEl.innerText = data.volatility_status || 'NORMAL';
+      const degEl = document.getElementById('rep-deg');
+      if (degEl) degEl.innerText = data.annual_degree || '172.71°';
       const trendElem = document.getElementById('rep-trend-dates');
       if (trendElem) trendElem.innerText = data.active_reversal_window || '18-Sep & 19-Sep';
 
@@ -1430,10 +1434,15 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         if 'multipart/form-data' in contentType or 'application/x-www-form-urlencoded' in contentType:
             # Handle File Uploads (Excel / Images) and Form Submissions
             import cgi
+            env = {
+                'REQUEST_METHOD': 'POST',
+                'CONTENT_TYPE': self.headers.get('Content-Type', ''),
+                'CONTENT_LENGTH': self.headers.get('Content-Length', '0')
+            }
             form = cgi.FieldStorage(
                 fp=self.rfile,
                 headers=self.headers,
-                environ={'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type']}
+                environ=env
             )
             
             if path == '/api/upload_reports':
