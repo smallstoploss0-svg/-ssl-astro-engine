@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-09-14T06:07:44.014725",
-  "date": "2026-09-14",
+  "updated_at": "2026-09-14T07:26:09.201246",
+  "date": "14-09-2026",
   "nifty": {
     "date_str": "2026-09-14",
     "instrument": "NIFTY 50",
-    "active_reversal_window": "18-Sep & 19-Sep",
+    "active_reversal_window": "18.09.2026 / 19.09.2026",
     "annual_gann_deg": 175.68,
     "current_nakshatra": "CHITRA (MARS)",
     "current_pada": "PADA 3",
@@ -20,16 +20,16 @@
         "time_str": "09:15 AM",
         "hour": 9,
         "minute": 15,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
-        "score": 4.5,
-        "is_master": true
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
       },
       {
         "formatted": "10:09 AM",
         "time_str": "10:09 AM",
         "hour": 10,
         "minute": 9,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
+        "rating": "4.0 STAR \u2605\u2605\u2605\u2605\u2606 (MASTER)",
         "score": 4.5,
         "is_master": true
       },
@@ -38,8 +38,8 @@
         "time_str": "11:10 AM",
         "hour": 11,
         "minute": 10,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
         "is_master": false
       },
       {
@@ -47,8 +47,8 @@
         "time_str": "11:51 AM",
         "hour": 11,
         "minute": 51,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
         "is_master": false
       }
     ],
@@ -58,25 +58,25 @@
         "time_str": "01:12 PM",
         "hour": 13,
         "minute": 12,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
-        "score": 4.5,
-        "is_master": true
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
       },
       {
         "formatted": "01:32 PM",
         "time_str": "01:32 PM",
         "hour": 13,
         "minute": 32,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
-        "score": 4.5,
-        "is_master": true
+        "rating": "2.5 STAR \u2605\u2605\u00bd\u2606\u2606",
+        "score": 3.0,
+        "is_master": false
       },
       {
         "formatted": "01:54 PM",
         "time_str": "01:54 PM",
         "hour": 13,
         "minute": 54,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
+        "rating": "4.0 STAR \u2605\u2605\u2605\u2605\u2606 (MASTER)",
         "score": 4.5,
         "is_master": true
       },
@@ -85,16 +85,16 @@
         "time_str": "03:14 PM",
         "hour": 15,
         "minute": 14,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
-        "is_master": false
+        "rating": "4.0 STAR \u2605\u2605\u2605\u2605\u2606 (MASTER)",
+        "score": 4.5,
+        "is_master": true
       }
     ]
   },
   "gold": {
     "date_str": "2026-09-14",
     "instrument": "GOLD XAUUSD",
-    "active_reversal_window": "18-Sep & 19-Sep",
+    "active_reversal_window": "18.09.2026 / 19.09.2026",
     "annual_gann_deg": 175.67,
     "current_nakshatra": "CHITRA (MARS)",
     "current_pada": "PADA 3",
@@ -110,8 +110,8 @@
         "time_str": "06:50 AM",
         "hour": 6,
         "minute": 50,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
         "is_master": false
       },
       {
@@ -119,8 +119,8 @@
         "time_str": "07:40 AM",
         "hour": 7,
         "minute": 40,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "2.5 STAR \u2605\u2605\u00bd\u2606\u2606",
+        "score": 3.0,
         "is_master": false
       },
       {
@@ -128,8 +128,8 @@
         "time_str": "08:30 AM",
         "hour": 8,
         "minute": 30,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
         "is_master": false
       },
       {
@@ -137,9 +137,9 @@
         "time_str": "09:10 AM",
         "hour": 9,
         "minute": 10,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
-        "score": 4.5,
-        "is_master": true
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
       }
     ],
     "london_slots": [
@@ -148,26 +148,26 @@
         "time_str": "01:35 PM",
         "hour": 13,
         "minute": 35,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
-        "score": 4.5,
-        "is_master": true
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
       },
       {
         "formatted": "03:15 PM",
         "time_str": "03:15 PM",
         "hour": 15,
         "minute": 15,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
-        "is_master": false
+        "rating": "4.0 STAR \u2605\u2605\u2605\u2605\u2606 (MASTER)",
+        "score": 4.5,
+        "is_master": true
       },
       {
         "formatted": "04:55 PM",
         "time_str": "04:55 PM",
         "hour": 16,
         "minute": 55,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
         "is_master": false
       },
       {
@@ -175,8 +175,8 @@
         "time_str": "05:20 PM",
         "hour": 17,
         "minute": 20,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
         "is_master": false
       }
     ],
@@ -186,17 +186,17 @@
         "time_str": "06:40 PM",
         "hour": 18,
         "minute": 40,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
-        "score": 4.5,
-        "is_master": true
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
       },
       {
         "formatted": "07:20 PM",
         "time_str": "07:20 PM",
         "hour": 19,
         "minute": 20,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "2.5 STAR \u2605\u2605\u00bd\u2606\u2606",
+        "score": 3.0,
         "is_master": false
       },
       {
@@ -204,8 +204,8 @@
         "time_str": "08:10 PM",
         "hour": 20,
         "minute": 10,
-        "rating": "4/5 \u2605\u2605\u2605\u2605\u2606",
-        "score": 3.5,
+        "rating": "2.0 STAR \u2605\u2605\u2606\u2606\u2606",
+        "score": 2.5,
         "is_master": false
       },
       {
@@ -213,9 +213,9 @@
         "time_str": "09:10 PM",
         "hour": 21,
         "minute": 10,
-        "rating": "5/5 \u2605\u2605\u2605\u2605\u2605",
-        "score": 4.5,
-        "is_master": true
+        "rating": "1.5 STAR \u2605\u00bd\u2606\u2606\u2606",
+        "score": 2.0,
+        "is_master": false
       }
     ]
   }
