@@ -1192,7 +1192,12 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404)
 
     def parse_astro_excel_report(self, excel_path):
-        import openpyxl, re, json
+        import re, json
+        try:
+            import openpyxl
+        except ImportError:
+            return False, "Python 'openpyxl' module is missing on server. Please ensure requirements.txt includes openpyxl."
+
         try:
             wb = openpyxl.load_workbook(excel_path, data_only=True)
         except Exception as e:
@@ -1478,18 +1483,30 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(json.dumps(res).encode('utf-8'))
                     return
             elif path == '/api/upload_astro_excel':
-                if 'astro_excel' in form and getattr(form['astro_excel'], 'file', None):
-                    tmp_path = os.path.join(REPORTS_DIR, 'uploaded_astro_report.xlsx')
-                    with open(tmp_path, 'wb') as f:
-                        f.write(form['astro_excel'].file.read())
-                    
-                    success, msg = self.parse_astro_excel_report(tmp_path)
-                    res = {"success": success, "message": msg}
-                    self.send_response(200)
-                    self.send_header('Content-type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(json.dumps(res).encode('utf-8'))
-                    return
+                try:
+                    excel_item = form['astro_excel'] if 'astro_excel' in form else None
+                    if excel_item and hasattr(excel_item, 'file') and excel_item.file:
+                        content = excel_item.file.read()
+                        if len(content) > 0:
+                            tmp_path = os.path.join(REPORTS_DIR, 'uploaded_astro_report.xlsx')
+                            with open(tmp_path, 'wb') as f:
+                                f.write(content)
+                            
+                            success, msg = self.parse_astro_excel_report(tmp_path)
+                            res = {"success": success, "message": msg}
+                        else:
+                            res = {"success": False, "message": "Uploaded Excel file is empty (0 bytes)."}
+                    else:
+                        res = {"success": False, "message": "No Excel file uploaded in form field 'astro_excel'."}
+                except Exception as ex:
+                    res = {"success": False, "message": f"Excel parsing error: {str(ex)}"}
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(res).encode('utf-8'))
+                return
 
         body_bytes = self.rfile.read(length) if length > 0 else b'{}'
         try:
